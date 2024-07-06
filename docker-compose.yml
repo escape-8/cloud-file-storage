@@ -53,6 +53,20 @@ services:
         networks:
             - dev-network
 
+    npm:
+        image: node:current-alpine
+        volumes:
+            - ./:/var/www/html
+        working_dir: /var/www/html
+        ports:
+            - "3000:3000"
+            - "3001:3001"
+            - "5173:5173"
+        container_name: npm
+        entrypoint: [ 'npm' ]
+        networks:
+            - dev-network
+
 networks:
     dev-network:
         driver: bridge

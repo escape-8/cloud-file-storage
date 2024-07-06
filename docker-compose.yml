@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+    nginx:
+        image: nginx:latest
+        volumes:
+            - ./:/var/www/html
+            - ./docker/dev/nginx/conf.d/:/etc/nginx/conf.d/
+        ports:
+            - "9993:80"
+        container_name: nginx-dev
+        restart: unless-stopped
+        depends_on:
+            - app-dev
+        networks:
+            - dev-network
+
+    app-dev:
+        build:
+            args:
+                user: ${USER}
+                uid: '1000'
+            context: .
+            dockerfile: docker/dev/app/php-dev.Dockerfile
+        working_dir: /var/www/html
+        environment:
+            PHP_IDE_CONFIG: "serverName=Xdebug"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - ./:/var/www/html
+            - ./docker/dev/app/php-dev.ini:/usr/local/etc/php/conf.d/php.ini
+        container_name: app-dev
+        depends_on:
+            - db-dev
+        networks:
+            - dev-network
+
+    db-dev:
+        image: mariadb:latest
+        restart: always
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - ./docker/dev/db/data:/var/lib/mysql
+            - ./docker/dev/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+        container_name: db-dev
+        ports:
+            - "3306:3306"
+        networks:
+            - dev-network
+
+networks:
+    dev-network:
+        driver: bridge

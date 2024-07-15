@@ -57,13 +57,42 @@ services:
         image: node:current-alpine
         volumes:
             - ./:/var/www/html
-        working_dir: /var/www/html
         ports:
             - "3000:3000"
             - "3001:3001"
             - "5173:5173"
-        container_name: npm
+        working_dir: /var/www/html
         entrypoint: [ 'npm' ]
+        networks:
+            - dev-network
+
+    composer:
+        build:
+            context: .
+            dockerfile: docker/dev/app/php-dev.Dockerfile
+            args:
+                user: ${USER}
+                uid: '1000'
+        volumes:
+            - ./:/var/www/html
+        depends_on:
+            - app-dev
+        entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+        networks:
+            - dev-network
+
+    artisan:
+        build:
+            context: .
+            dockerfile: docker/dev/app/php-dev.Dockerfile
+            args:
+                user: ${USER}
+                uid: '1000'
+        volumes:
+            - ./:/var/www/html
+        depends_on:
+            - db-dev
+        entrypoint: [ 'php', '/var/www/html/artisan' ]
         networks:
             - dev-network
 

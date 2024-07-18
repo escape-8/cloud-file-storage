@@ -39,6 +39,7 @@ $(document).ready(function() {
             },
             success: function () {
                 callMainPage();
+                window.history.replaceState({}, '', '/');
             },
             error: function (response) {
                 getValidationErrorInFields(response);
@@ -57,6 +58,7 @@ $(document).ready(function() {
             },
             success: function () {
                 callMainPage();
+                window.history.replaceState({}, '', '/');
             }
         })
     })
@@ -69,6 +71,7 @@ $(document).ready(function() {
             dataType: "html",
             success: function (response) {
                 getPageFromResponse(response);
+                window.history.replaceState({}, '', '/login');
             }
         })
     })
@@ -81,6 +84,7 @@ $(document).ready(function() {
             dataType: "html",
             success: function (response) {
                 getPageFromResponse(response);
+                window.history.replaceState({}, '', '/register');
             }
         })
     })
@@ -100,6 +104,7 @@ $(document).ready(function() {
             },
             success: function () {
                 callMainPage();
+                window.history.replaceState({}, '', '/');
             },
             error: function (response) {
                 getValidationErrorInFields(response);

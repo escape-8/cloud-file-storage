@@ -2,27 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\FileStorage\Services\StorageService;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    private StorageService $storageService;
+
+    public function __construct(StorageService $storageService)
     {
         $this->middleware('auth');
+        $this->storageService = $storageService;
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
+    public function index(Request $request)
     {
-        return view('home');
+        $path = $request->query('path', '');
+        $files = $this->storageService->getFilesFromPath(urldecode($path));
+        return view('home', ['files' => $files]);
     }
 }

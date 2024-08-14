@@ -7,7 +7,12 @@
             <div class="card">
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
-                <div class="card-body">
+            <div class="card border-0 w-100">
+                <div class="px-5 pt-4 pb-0">
+                    <div class="h4 bc">{{ Breadcrumbs::render('main') }}</div>
+                </div>
+
+                <div class="card-body overflow-y-auto z-1">
                     @if (session('status'))
                         <div class="alert alert-success" role="alert">
                             {{ session('status') }}

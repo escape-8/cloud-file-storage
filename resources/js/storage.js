@@ -83,6 +83,30 @@ $(document).ready(function() {
         });
     });
 
+    app.on('click', '.file-item', function() {
+        $('.file-item').removeClass('select-file');
+        $(this).toggleClass('select-file');
+
+        const itemName = $(this).find("#filename")[0].innerText;
+
+        $.ajax({
+            url: '/',
+            method: "GET",
+            type: "html",
+            data: {
+                path: new URL($(this).find('form.download').attr('action')).searchParams.get('path')
+            },
+            success: function (response) {
+                app.find('#a-side-left').find('#file-action').remove();
+                app.find('#a-side-left').append($(response).find('#a-side-left').find('#file-action'));
+                app.find('#rename-file-form').replaceWith($(response).find('#rename-file-form'));
+                app.find('#delete-modal').replaceWith($(response).find('#delete-modal'));
+                $('#rename-file').find('.modal-body input[name="name"]').attr('value', itemName);
+                $('#file-action').removeClass('d-none');
+            }
+        });
+    });
+
     function getPage(nextHref) {
         $.ajax({
             url: nextHref,

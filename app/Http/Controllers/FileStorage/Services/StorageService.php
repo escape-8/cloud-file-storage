@@ -7,9 +7,12 @@ namespace App\Http\Controllers\FileStorage\Services;
 use App\Http\Controllers\FileStorage\Exceptions\FileNameCollisionException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use ZipArchive;
 
 class StorageService
 {
@@ -61,6 +64,24 @@ class StorageService
         }
     }
 
+    public function downloadFile(string $pathToFile): BinaryFileResponse|StreamedResponse
+    {
+        $fullPath = $this->createPath('', $pathToFile);
+
+        if ($this->disk->directoryExists($fullPath)) {
+            $zip = new ZipArchive();
+            $filename = last(explode('/', $pathToFile)) . '.zip';
+            $zip->open($filename, ZipArchive::CREATE);
+            $zip->addEmptyDir($pathToFile);
+            $this->packDirectory($fullPath, $zip);
+            $zip->close();
+
+            return response()->download(public_path($filename))->deleteFileAfterSend();
+        }
+
+        return $this->disk->download($fullPath);
+    }
+
 
     public function createPath(string $path, string $name): string
     {
@@ -71,6 +92,23 @@ class StorageService
         }
 
         return $newPath;
+    }
+
+    private function packDirectory(string $pathOfDirectory, ZipArchive $zip): ZipArchive
+    {
+
+        foreach ($this->disk->listContents($pathOfDirectory) as $file) {
+            if ($file['type'] === 'file') {
+                $zipFilepath = $this->excludeUserRoot($file['path']);
+                $zip->addFromString($zipFilepath, $this->disk->read($file['path']));
+            }
+
+            if ($file['type'] === 'dir') {
+                $this->packDirectory($file['path'], $zip);
+            }
+        }
+
+        return $zip;
     }
 
 

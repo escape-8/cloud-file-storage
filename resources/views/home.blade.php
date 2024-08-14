@@ -22,7 +22,7 @@
 
                 <div class="card-body overflow-y-auto z-1">
                     @if (session('status'))
-                        <div class="alert alert-success" role="alert">
+                        <div class="alert alert-success align-items-center justify-content-center w-100" role="alert">
                             {{ session('status') }}
                         </div>
                     @endif

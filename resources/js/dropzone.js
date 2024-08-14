@@ -253,4 +253,13 @@ $(document).ready(function () {
         app.find('.card-body').replaceWith($(response).find('.card-body'));
     }
 
+    app.on('dragover', '#drop-files.modal.fade', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
+    app.on('drop', '#drop-files.modal.fade', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    });
 });

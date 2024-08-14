@@ -58,6 +58,25 @@ $(document).ready(function () {
 
     });
 
+    app.on('dragenter', '#drop-files .drop-zone', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $('.drop-zone').addClass('border-black');
+        $('.drop-zone-prompt').addClass('text-dark');
+    });
+
+    app.on('dragleave dragend drop', '#drop-files .drop-zone', function (e) {
+        e.preventDefault();
+        $('.drop-zone').removeClass('border-black');
+        $('.drop-zone-prompt').removeClass('text-dark');
+    });
+
+    app.on('dragover', '#drop-files .drop-zone', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = 'copy';
+    });
+
     app.on('drop', '#drop-file', async function (e) {
         e.preventDefault();
         e.stopPropagation();

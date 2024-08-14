@@ -55,7 +55,8 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a id="logout-form" class="dropdown-item" href="{{ route('logout') }}">
+                                    <a id="logout-form" class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H6a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h4M16 17l5-5-5-5M19.8 12H9"/></svg>
                                         {{ __('Logout') }}
                                     </a>
 
@@ -73,6 +74,9 @@
         <main class="py-4">
             @yield('content')
         </main>
+        <footer class="bg-light w-100" style="height: 66px;">
+            <div></div>
+        </footer>
     </div>
 </body>
 </html>

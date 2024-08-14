@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FileStorage\DiskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::prefix('storage')->group(function () {
+    Route::get('/search', [DiskController::class, 'search'])->name('search');
+    Route::post('/upload', [DiskController::class, 'upload'])->name('upload');
+    Route::post('/download', [DiskController::class, 'download'])->name('download');
+    Route::post('/create/directory', [DiskController::class, 'createDirectory'])->name('create-directory');
+    Route::patch('/rename', [DiskController::class, 'rename'])->name('rename-file');
+    Route::delete('/delete', [DiskController::class, 'destroy'])->name('delete');
 });
 
 require __DIR__.'/auth.php';

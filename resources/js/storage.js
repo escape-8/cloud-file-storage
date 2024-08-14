@@ -24,6 +24,36 @@ $(document).ready(function() {
         });
     });
 
+    app.on('click', '#rename', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: '/api/storage/rename',
+            method: "PATCH",
+            type: "json",
+            data: {
+                path: new URL($('#delete-file-form').attr('action')).searchParams.get('path'),
+                name: $('#rename-file').find('input[name=name]').val(),
+                _token: $('input[name=_token]').val(),
+            },
+            success: function (response) {
+                getPage(window.location.href);
+                setTimeout(function() {
+                    setFlash(successFlashMessage(response.status));
+                }, 400);
+                const renameForm = Bootstrap.Modal.getOrCreateInstance(document.getElementById('rename-file-form'));
+                renameForm.hide();
+            },
+            error: function (response) {
+                const toJson = JSON.parse(response.responseText);
+                const input = $('#rename-file .modal-body .input-group');
+                if (toJson) {
+                    displayErrors(toJson, input);
+                }
+            }
+        });
+    });
+
     function getPage(nextHref) {
         $.ajax({
             url: nextHref,
@@ -39,6 +69,15 @@ $(document).ready(function() {
 
     function getPageFromResponse(response) {
         $('#storage').replaceWith($(response).find('#storage'));
+    }
+
+    function displayErrors(errorResponse, blockForErrors) {
+        $.each(errorResponse.errors, function (field, messages) {
+            for (const message of messages) {
+                blockForErrors.nextAll().remove();
+                blockForErrors.after(`<span class="invalid-feedback d-inline-block" role="alert"><strong>${message}</strong></span>`);
+            }
+        });
     }
 
     function checkAlertSuccess () {

@@ -68,6 +68,15 @@ services:
         networks:
             - dev-network
 
+    redis-session:
+        image: redis:alpine
+        restart: unless-stopped
+        ports:
+            - '6379:6379'
+        container_name: redis-session
+        networks:
+            - dev-network
+
     npm:
         image: node:current-alpine
         volumes:

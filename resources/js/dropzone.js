@@ -77,6 +77,13 @@ $(document).ready(function () {
         e.originalEvent.dataTransfer.dropEffect = 'copy';
     });
 
+    app.on('hidden.bs.modal', '#drop-files', function () {
+        app.find('#drop-dir').attr('id', 'dropzone');
+        app.find('#drop-file').attr('id', 'dropzone');
+        app.find('#upload-items').empty();
+        app.find('#modal-upload').addClass('d-none');
+    });
+
     app.on('drop', '#drop-file', async function (e) {
         e.preventDefault();
         e.stopPropagation();

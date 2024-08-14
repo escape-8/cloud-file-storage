@@ -1,11 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+<div id="storage"  class="container">
+    <div class="d-flex flex-row justify-content-center">
+        <div class="card d-flex col-md-12 flex-row flex-grow-1" style="height: calc(100vh - 170px);">
+
+            <div class="bg-light flex-shrink-0" style="width: 230px;">
+                <div id="a-side-left" class="d-flex flex-column align-items-center mt-3 px-3">
+                    @include('components.create-dropdown', ['path' => request()->query('path')])
+                    @include('components.search-button')
+                    @if (request()->query('path'))
+                        @include('components.file-action-card', ['path' => request()->query('path')])
+                    @endif
+                </div>
+            </div>
 
             <div class="card border-0 w-100">
                 <div class="px-5 pt-4 pb-0">

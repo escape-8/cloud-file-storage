@@ -40,6 +40,15 @@ class StorageService
         return $paths;
     }
 
+    public function createDirectory(string $path): void
+    {
+        if ($this->disk->exists($path)) {
+            $newDirName = last(explode('/', $path));
+            throw new FileNameCollisionException("Directory $newDirName already exists, please, rename it");
+        }
+
+        $this->disk->makeDirectory($path);
+    }
 
     public function getUserBucket(): string
     {

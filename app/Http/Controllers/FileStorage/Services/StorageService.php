@@ -91,6 +91,32 @@ class StorageService
         return $this->disk->download($fullPath);
     }
 
+    public function search(string $search): array
+    {
+        $fileNames = $this->disk->allFiles($this->getUserBucket());
+        $dirsPath = $this->disk->allDirectories($this->getUserBucket());
+
+        $filtered = collect(['dirs' => $dirsPath, 'files' => $fileNames])
+            ->map(function ($paths) use ($search) {
+                return collect($paths)->filter(function ($path) use ($search) {
+                    return str_contains($this->excludeUserRoot($path), $search);
+                })->values();
+            });
+
+        $out = $filtered->map(function ($paths, $type) {
+            return $type === 'files'
+                ? collect($paths)
+                    ->keyBy(fn ($path) => $this->excludeUserRoot($path))
+                    ->map(fn ($path, $keyFilename) => route('home', ['path' => $this->getPathWithoutLastPart($keyFilename)]))
+                    ->toArray()
+                : collect($paths)
+                    ->keyBy(fn ($path) => $this->excludeUserRoot($path))
+                    ->map(fn ($path, $keyFilename) => route('home', ['path' => $keyFilename]))
+                    ->toArray();
+        });
+
+        return $out->toArray();
+    }
 
     public function createPath(string $path, string $name): string
     {

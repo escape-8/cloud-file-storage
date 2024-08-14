@@ -21,6 +21,22 @@ class DiskController extends Controller
         $this->middleware('auth');
         $this->storageService = $storageService;
     }
+
+    public function search(Request $request): JsonResponse
+    {
+
+        if ($request->get('query')) {
+            return response()->json(
+                [
+                    'result' => $this->storageService->search(urldecode($request->get('query'))),
+                    'query' => $request->query('query')
+                ]
+            );
+        };
+
+        return response()->json(['result' => []]);
+    }
+
     public function createDirectory(CreateDirectoryRequest $request): JsonResponse
     {
         $pathToDir = $this->storageService->createPath(urldecode($request->get('path')) ?? '', $request->get('name'));

@@ -20,6 +20,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 Route::prefix('storage')->group(function () {
+    Route::get('/search', [DiskController::class, 'search'])->name('search');
     Route::post('/upload', [DiskController::class, 'upload'])->name('upload');
     Route::post('/download', [DiskController::class, 'download'])->name('download');
     Route::post('/create/directory', [DiskController::class, 'createDirectory'])->name('create-directory');

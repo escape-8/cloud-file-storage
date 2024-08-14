@@ -85,6 +85,65 @@ $(document).ready(function () {
         }
     });
 
+    app.on('drop', '#drop-dir', async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const length = e.originalEvent.dataTransfer.items.length;
+
+        for (let i = 0; i < length; i++) {
+            let entry = e.originalEvent.dataTransfer.items[i].webkitGetAsEntry();
+
+            if (entry.isFile) {
+                $('#drop-dir').append(`<span class="invalid-feedback d-inline-block drop-zone-prompt" role="alert"><strong class="text-wrap">Only directories not files</strong></span>`)
+                setTimeout(function() {
+                    $('.invalid-feedback').fadeOut('slow', function() {
+                        $(this).remove();
+                    });
+                }, 1500);
+            }
+
+            if (entry.isDirectory) {
+                async function readDirectory(directory) {
+                    const dirReader = directory.createReader();
+                    const entries = [];
+
+                    while (true) {
+                        const results = await new Promise((resolve, reject) => {
+                            dirReader.readEntries(resolve, reject);
+                        });
+
+                        if (!results.length) {
+                            break;
+                        }
+
+                        for (const entry of results) {
+                            if (entry.isFile) {
+                                entries.push(entry);
+                            } else if (entry.isDirectory) {
+                                entries.push(entry);
+                                const subRes = await readDirectory(entry)
+                                entries.push(...subRes);
+                            }
+                        }
+                    }
+                    return entries;
+                }
+
+                const entries = await readDirectory(entry);
+                entries.forEach((file) => {
+                    if (file.isFile) {
+                        file.file(f => {
+                            const newFile = new File([f], file.fullPath, {
+                            });
+                            getListOfFile();
+                            uploadFile(newFile);
+                        });
+                    }
+                })
+            }
+        }
+    });
+
     function getListOfFile() {
         app.find('#modal-upload').removeClass('d-none');
     }

@@ -54,6 +54,35 @@ $(document).ready(function() {
         });
     });
 
+    app.on('click', '#create-dir', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/api/storage/create/directory',
+            method: "POST",
+            type: "json",
+            data: {
+                path: new URL($('#delete-file-form').attr('action')).searchParams.get('path'),
+                name: $('#create-directory').find('input[name=name]').val(),
+                _token: $('input[name=_token]').val(),
+            },
+            success: function (response) {
+                getPage(window.location.href);
+                setTimeout(function() {
+                    setFlash(successFlashMessage(response.status));
+                }, 300);
+                const dirForm = Bootstrap.Modal.getOrCreateInstance(document.getElementById('directory-form'));
+                dirForm.hide();
+            },
+            error: function (response) {
+                const toJson = JSON.parse(response.responseText);
+                const input = $('#create-directory .modal-body .input-group');
+                if (toJson) {
+                    displayErrors(toJson, input);
+                }
+            }
+        });
+    });
+
     function getPage(nextHref) {
         $.ajax({
             url: nextHref,

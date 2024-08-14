@@ -37,4 +37,25 @@ $(document).ready(function () {
         }
     });
 
+    app.on('click', '#drop-files .drop-zone', function () {
+        if (app.find('#directory').length) {
+            app.find('#file').remove();
+            app.find('#directory').remove();
+            app.find('#upload-file').append(`<input type="file" id="directory" name="files[]" multiple webkitdirectory hidden />`);
+
+            $('#directory').on('change', function (e) {
+                const fileList = e.originalEvent.target.files;
+                $('.drop-zone').removeClass('border-black');
+                $('.drop-zone-prompt').removeClass('text-dark');
+                getListOfFile();
+                $.each(fileList, function (idx, file) {
+                    uploadFile(file);
+                });
+            });
+
+            $("#directory").click();
+        }
+
+    });
+
 });

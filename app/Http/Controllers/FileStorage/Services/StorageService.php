@@ -91,6 +91,48 @@ class StorageService
         return $this->disk->download($fullPath);
     }
 
+    public function rename(string $oldPathToFile, string $newFilename): void
+    {
+        $fullOldPath = $this->createPath('', $oldPathToFile);
+
+        if ($this->disk->directoryExists($fullOldPath)) {
+            $newPath = $this->getPathWithoutLastPart($oldPathToFile);
+            $newDirPath = $this->createPath($newPath, $newFilename);
+
+            if ($this->disk->exists($newDirPath)) {
+                throw new FileNameCollisionException("Directory with name $newFilename already exists, please, rename it");
+            }
+
+            $this->createDirectory($newDirPath);
+
+            $filesInOldDir = $this->disk->allFiles($fullOldPath);
+            $dirsInOldDir = $this->disk->allDirectories($fullOldPath);
+
+
+            foreach ($dirsInOldDir as $oldDir) {
+                $innerDirName = str_replace($fullOldPath, $newDirPath , $oldDir);
+                $this->createDirectory($innerDirName);
+            }
+
+            foreach ($filesInOldDir as $file) {
+                $innerFileName = str_replace($fullOldPath, $newDirPath , $file);
+                $this->disk->move($file, $innerFileName);
+            }
+
+            $this->delete($this->excludeUserRoot($fullOldPath));
+
+        } else {
+            $newPath = $this->getPathWithoutLastPart($fullOldPath) . '/' . $newFilename;
+
+            if ($this->disk->exists($newPath)) {
+                throw new FileNameCollisionException("File with name $newFilename already exists, please, rename it");
+            }
+
+            $this->disk->move($fullOldPath, $newPath);
+        }
+
+    }
+
     public function search(string $search): array
     {
         $fileNames = $this->disk->allFiles($this->getUserBucket());
@@ -146,6 +188,15 @@ class StorageService
         return $zip;
     }
 
+    private function getLastPartOfPath(string $path): string
+    {
+        return substr($path, strrpos($path, '/') + 1);
+    }
+
+    private function getPathWithoutLastPart(string $path): string
+    {
+        return substr($path, 0, intval(strrpos($path, '/')));
+    }
 
     private function excludeUserRoot(string $path): string
     {

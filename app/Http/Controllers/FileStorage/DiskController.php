@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\FileStorage\Exceptions\FileNameCollisionException;
 use App\Http\Controllers\FileStorage\Services\StorageService;
 use App\Http\Requests\CreateDirectoryRequest;
+use App\Http\Requests\RenameFileRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -69,5 +70,18 @@ class DiskController extends Controller
         return $this->storageService->downloadFile($pathToFile);
     }
 
+    public function rename(RenameFileRequest $request): JsonResponse
+    {
+        $oldPathToFile = urldecode($request->get('path'));
+        $newName = $request->get('name');
+
+        try {
+            $this->storageService->rename($oldPathToFile, $newName);
+        } catch (FileNameCollisionException $e) {
+            return response()->json(['errors' => ['name' => [$e->getMessage()]]], $e->getCode());
+        }
+
+
+        return response()->json(['status' => 'Rename successful!']);
     }
 }

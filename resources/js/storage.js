@@ -107,6 +107,12 @@ $(document).ready(function() {
         });
     });
 
+    app.on('click', '.breadcrumb-item > a', function (e) {
+        e.preventDefault();
+        const next = $(this).attr('href');
+        getPage(next);
+    });
+
     function getPage(nextHref) {
         $.ajax({
             url: nextHref,

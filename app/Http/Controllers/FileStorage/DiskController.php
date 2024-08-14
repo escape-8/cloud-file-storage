@@ -7,11 +7,11 @@ use App\Http\Controllers\FileStorage\Exceptions\FileNameCollisionException;
 use App\Http\Controllers\FileStorage\Services\StorageService;
 use App\Http\Requests\CreateDirectoryRequest;
 use App\Http\Requests\RenameFileRequest;
+use App\Http\Requests\UploadFileRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use App\Http\Requests\UploadFileRequest;
 
 class DiskController extends Controller
 {

@@ -113,6 +113,16 @@ $(document).ready(function() {
         getPage(next);
     });
 
+    app.on('click dblclick', '#directory-files', function (e) {
+        if (e.type === 'click') {
+            e.preventDefault();
+        } else if (e.type === 'dblclick') {
+            e.preventDefault();
+            const next = $(this).attr('href');
+            getPage(next);
+        }
+    });
+
     function getPage(nextHref) {
         $.ajax({
             url: nextHref,

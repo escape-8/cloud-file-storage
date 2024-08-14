@@ -64,6 +64,14 @@ class DiskController extends Controller
         return response()->json(['status' => 'OK']);
     }
 
+    public function destroy(Request $request): JsonResponse
+    {
+        $pathToFile = urldecode($request->get('path'));
+        $this->storageService->delete($pathToFile);
+
+        return response()->json(['status' => 'Delete successful!']);
+    }
+
     public function download(Request $request): BinaryFileResponse|StreamedResponse
     {
         $pathToFile = $request->query('path');

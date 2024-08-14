@@ -25,6 +25,7 @@ Route::prefix('storage')->group(function () {
     Route::post('/download', [DiskController::class, 'download'])->name('download');
     Route::post('/create/directory', [DiskController::class, 'createDirectory'])->name('create-directory');
     Route::patch('/rename', [DiskController::class, 'rename'])->name('rename-file');
+    Route::delete('/delete', [DiskController::class, 'destroy'])->name('delete');
 });
 
 require __DIR__.'/auth.php';

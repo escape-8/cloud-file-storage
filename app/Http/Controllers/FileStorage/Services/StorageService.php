@@ -133,6 +133,17 @@ class StorageService
 
     }
 
+    public function delete(string $pathToFile): bool
+    {
+        $fullPath = $this->createPath('', $pathToFile);
+
+        if ($this->disk->directoryExists($fullPath)) {
+            return $this->disk->deleteDirectory($fullPath);
+        }
+
+        return $this->disk->delete($fullPath);
+    }
+
     public function search(string $search): array
     {
         $fileNames = $this->disk->allFiles($this->getUserBucket());

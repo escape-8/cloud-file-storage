@@ -1,0 +1,97 @@
+version: '3.9'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/prod/nginx/nginx-prod.Dockerfile
+    volumes:
+      - ./docker/prod/nginx/conf.d/:/etc/nginx/conf.d/
+    restart: unless-stopped
+    ports:
+      - "9993:80"
+    depends_on:
+      - app
+    container_name: nginx-prod
+    networks:
+      - prod-network
+
+  app:
+    build:
+      args:
+        user: ${USER}
+        uid: '1000'
+      context: .
+      dockerfile: docker/prod/app/php-prod.Dockerfile
+    volumes:
+      - ./docker/prod/app/php-prod.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./docker/prod/app/docker-php-entrypoint/:/tmp/docker-php-entrypoint/
+    restart: unless-stopped
+    depends_on:
+      - db
+    container_name: app-prod
+    networks:
+      - prod-network
+
+  db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_ROOT_HOST: ${DB_HOST}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./docker/prod/db/data:/var/lib/mysql
+      - ./docker/prod/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    container_name: db-prod
+    ports:
+      - "3306:3306"
+    networks:
+      - prod-network
+
+  s3:
+    image: minio/minio:latest
+    volumes:
+      - ./docker/prod/minio/data:/minio/data
+    ports:
+      - '9992:9992'
+      - '9991:9991'
+    environment:
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
+    container_name: s3
+    command: server --address ":9992" /minio/data
+    networks:
+      - prod-network
+
+  createbucket:
+    image: 'minio/mc'
+    depends_on:
+      - s3
+    container_name: createbucket-prod
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set cloud-file-storage ${AWS_ENDPOINT} ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
+      /usr/bin/mc mb cloud-file-storage/${AWS_BUCKET};
+      /usr/bin/mc policy set public cloud-file-storage/${AWS_BUCKET};
+      exit 0;
+      "
+    networks:
+      - prod-network
+
+
+  redis-session:
+    image: redis:alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    container_name: redis-session
+    networks:
+      - prod-network
+
+
+networks:
+  prod-network:
+    driver: bridge

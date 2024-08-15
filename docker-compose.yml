@@ -123,6 +123,21 @@ services:
         networks:
             - dev-network
 
+    createbucket:
+        image: 'minio/mc'
+        depends_on:
+            - s3
+        container_name: createbucket-dev
+        entrypoint: >
+            /bin/sh -c "
+            /usr/bin/mc alias set cloud-file-storage ${AWS_ENDPOINT} ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
+            /usr/bin/mc mb cloud-file-storage/${AWS_BUCKET};
+            /usr/bin/mc policy set public cloud-file-storage/${AWS_BUCKET};
+            exit 0;
+            "
+        networks:
+            - dev-network
+
 networks:
     dev-network:
         driver: bridge

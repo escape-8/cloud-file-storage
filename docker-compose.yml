@@ -87,6 +87,7 @@ services:
             - "5173:5173"
         working_dir: /var/www/html
         entrypoint: [ 'npm' ]
+        container_name: npm-dev
         networks:
             - dev-network
 
@@ -102,6 +103,7 @@ services:
         depends_on:
             - app-dev
         entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+        container_name: composer-dev
         networks:
             - dev-network
 
@@ -117,6 +119,7 @@ services:
         depends_on:
             - db-dev
         entrypoint: [ 'php', '/var/www/html/artisan' ]
+        container_name: artisan-dev
         networks:
             - dev-network
 

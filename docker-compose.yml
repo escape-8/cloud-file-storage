@@ -87,6 +87,7 @@ services:
             - "5173:5173"
         working_dir: /var/www/html
         entrypoint: [ 'npm' ]
+        container_name: npm-dev
         networks:
             - dev-network
 
@@ -102,6 +103,7 @@ services:
         depends_on:
             - app-dev
         entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+        container_name: composer-dev
         networks:
             - dev-network
 
@@ -117,6 +119,22 @@ services:
         depends_on:
             - db-dev
         entrypoint: [ 'php', '/var/www/html/artisan' ]
+        container_name: artisan-dev
+        networks:
+            - dev-network
+
+    createbucket:
+        image: 'minio/mc'
+        depends_on:
+            - s3
+        container_name: createbucket-dev
+        entrypoint: >
+            /bin/sh -c "
+            /usr/bin/mc alias set cloud-file-storage ${AWS_ENDPOINT} ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
+            /usr/bin/mc mb cloud-file-storage/${AWS_BUCKET};
+            /usr/bin/mc policy set public cloud-file-storage/${AWS_BUCKET};
+            exit 0;
+            "
         networks:
             - dev-network
 

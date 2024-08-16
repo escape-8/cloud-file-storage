@@ -13,7 +13,7 @@ $(document).ready(function() {
     }
 
     function getPageFromResponse(response) {
-        app.html([$(response).find('nav.navbar'), $(response).find('main')]);
+        app.html([$(response).find('nav.navbar'), $(response).find('main'), $(response).find('footer')]);
     }
 
     function getValidationErrorInFields(response) {

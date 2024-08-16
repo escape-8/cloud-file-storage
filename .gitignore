@@ -19,3 +19,5 @@ yarn-error.log
 /.vscode
 /docker/dev/db/data
 /docker/dev/minio
+/docker/prod/db/data
+/docker/prod/minio

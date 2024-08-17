@@ -75,6 +75,12 @@ services:
         command: server --address ":9992" --console-address ":9991" /minio/data
         networks:
             - dev-network
+        healthcheck:
+            test: [ "CMD", "curl", "-I", "${AWS_ENDPOINT}minio/health/live" ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+
 
     redis-session:
         image: redis:alpine
@@ -134,7 +140,8 @@ services:
     createbucket:
         image: 'minio/mc'
         depends_on:
-            - s3
+            s3:
+                condition: service_healthy
         container_name: createbucket-dev
         entrypoint: >
             /bin/sh -c "

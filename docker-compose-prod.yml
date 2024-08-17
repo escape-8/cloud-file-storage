@@ -28,7 +28,10 @@ services:
       - ./docker/prod/app/docker-php-entrypoint/:/tmp/docker-php-entrypoint/
     restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      redis-session:
+          condition: service_started
     container_name: app-prod
     networks:
       - prod-network
@@ -39,8 +42,6 @@ services:
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
-      MYSQL_ROOT_HOST: ${DB_HOST}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./docker/prod/db/data:/var/lib/mysql
@@ -50,6 +51,12 @@ services:
       - "3306:3306"
     networks:
       - prod-network
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   s3:
     image: minio/minio:latest

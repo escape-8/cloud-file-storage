@@ -32,7 +32,10 @@ services:
             - ./docker/dev/app/php-dev.ini:/usr/local/etc/php/conf.d/php.ini
         container_name: app-dev
         depends_on:
-            - db-dev
+            db-dev:
+                condition: service_healthy
+            redis-session:
+                condition: service_started
         networks:
             - dev-network
 
@@ -42,7 +45,6 @@ services:
         environment:
             MYSQL_DATABASE: ${DB_DATABASE}
             MYSQL_USER: ${DB_USERNAME}
-            MYSQL_PASSWORD: ${DB_PASSWORD}
             MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
         volumes:
             - ./docker/dev/db/data:/var/lib/mysql
@@ -52,6 +54,12 @@ services:
             - "3306:3306"
         networks:
             - dev-network
+        healthcheck:
+            test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+            start_period: 10s
+            interval: 10s
+            timeout: 5s
+            retries: 3
 
     s3:
         image: minio/minio:latest

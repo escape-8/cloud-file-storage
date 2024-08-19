@@ -19,6 +19,7 @@ $(document).ready(function () {
 
     app.on('click', '#drop-files .drop-zone', function () {
         if (app.find('#file').length) {
+            app.off('change', '#file');
             app.find('#directory').remove();
             app.find('#file').remove();
             app.find('#upload-file').append(`<input type="file" id="file" name="files[]" multiple hidden />`);
@@ -39,6 +40,7 @@ $(document).ready(function () {
 
     app.on('click', '#drop-files .drop-zone', function () {
         if (app.find('#directory').length) {
+            app.off('change', '#directory');
             app.find('#file').remove();
             app.find('#directory').remove();
             app.find('#upload-file').append(`<input type="file" id="directory" name="files[]" multiple webkitdirectory hidden />`);
@@ -82,6 +84,8 @@ $(document).ready(function () {
         app.find('#drop-file').attr('id', 'dropzone');
         app.find('#upload-items').empty();
         app.find('#modal-upload').addClass('d-none');
+        app.find('#file').remove();
+        app.find('#directory').remove();
     });
 
     app.on('drop', '#drop-file', async function (e) {

@@ -282,16 +282,16 @@ $(document).ready(function () {
     });
 
     function checkMaxFileSize(file) {
-        const KB_IN_MB = 1048576;
+        const BYTES_IN_MB = 1048576;
         const maxUploadSizeMB = 20;
-        const MaxFileSizeInKilobytes = KB_IN_MB * maxUploadSizeMB;
+        const MaxFileSizeInBytes = BYTES_IN_MB * maxUploadSizeMB;
 
-        return file.size > MaxFileSizeInKilobytes;
+        return file.size > MaxFileSizeInBytes;
     }
 
     function uploadResponse (fileName, id, file) {
-        const KB_IN_MB = 1048576;
-        const filesizeMB = (file.size / KB_IN_MB).toFixed(2);
+        const BYTES_IN_MB = 1048576;
+        const filesizeMB = (file.size / BYTES_IN_MB).toFixed(2);
         const fileItem = app.find('#upload-items').find(`#${id}`);
 
         const html = `

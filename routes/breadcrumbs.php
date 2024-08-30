@@ -11,7 +11,8 @@ Breadcrumbs::for('main', function (BreadcrumbTrail $trail) {
     $trail->push('Files', route('home'));
 
     if (request()->query('path')) {
-        $breadcrumbs = explode('/', urldecode(request()->query('path')));
+        $breadcrumbs = collect(explode('/', urldecode(request()->query('path'))))
+        ->filter(fn ($item) => !empty($item))->values()->toArray();
 
         foreach ($breadcrumbs as $breadcrumb) {
             $pathStack[] = $breadcrumb;

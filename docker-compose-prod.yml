@@ -44,7 +44,7 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ./docker/prod/db/data:/var/lib/mysql
+      - cloud-storage-data-prod:/var/lib/mysql
       - ./docker/prod/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     container_name: db-prod
     ports:
@@ -104,6 +104,9 @@ services:
     networks:
       - prod-network
 
+volumes:
+  cloud-storage-data-prod:
+    driver: local
 
 networks:
   prod-network:

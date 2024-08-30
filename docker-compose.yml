@@ -47,7 +47,7 @@ services:
             MYSQL_USER: ${DB_USERNAME}
             MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
         volumes:
-            - ./docker/dev/db/data:/var/lib/mysql
+            - cloud-storage-data-dev:/var/lib/mysql
             - ./docker/dev/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
         container_name: db-dev
         ports:
@@ -56,7 +56,7 @@ services:
             - dev-network
         healthcheck:
             test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
-            start_period: 10s
+            start_period: 20s
             interval: 10s
             timeout: 5s
             retries: 3
@@ -152,6 +152,10 @@ services:
             "
         networks:
             - dev-network
+
+volumes:
+    cloud-storage-data-dev:
+        driver: local
 
 networks:
     dev-network:
